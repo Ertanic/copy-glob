@@ -2,6 +2,14 @@
 name = "copy-glob"
 version = "0.1.0"
 edition = "2024"
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/Ertanic/copy-glob"
+description = """
+A small utility to copy files to an output directory using glob syntax
+"""
+keywords = ["cargo", "filesystem", "fs", "tools"]
+categories = ["development-tools::build-utils", "filesystem"]
 
 [dependencies]
 walkdir = "2"
