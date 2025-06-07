@@ -1,9 +1,9 @@
 [package]
 name = "copy-glob"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 readme = "README.md"
-license-file = "LICENSE"
+license = "MIT"
 repository = "https://github.com/Ertanic/copy-glob"
 description = """
 A small utility to copy files to an output directory using glob syntax

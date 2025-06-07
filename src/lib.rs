@@ -1,34 +1,34 @@
 //! # About it
-//! 
+//!
 //! **copy-glob** is a small utility to copy files to an output directory using glob syntax. Inspired by [copy_to_output](https://crates.io/crates/copy_to_output).
-//! 
+//!
 //! # How to use
-//! 
+//!
 //! Add a crate to the build dependencies in `Cargo.toml`.
-//! 
+//!
 //! ```toml
 //! [build-dependencies]
 //! copy-glob = "0.1"
 //! ```
-//! 
+//!
 //! Create `build.rs` and add the following to it:
-//! 
+//!
 //! ```rust
 //! use copy_glob::{get_target_folder, copy_glob};
-//! 
+//!
 //! fn main() {
 //!     let output = get_target_folder().join("copies"); // target/{debug,release}/copies
 //!     copy_glob("**/for_copy/*", output);
 //! }
 //! ```
-//! 
+//!
 //! This will copy all the files in the directory, preserving the structure, since the copying starts from the root of the project (where the `Cargo.toml` file is located).
-//! 
+//!
 //! To localize the file search somehow, you can use the following code:
-//! 
+//!
 //! ```rust,no_run
 //! use copy_glob::{get_target_folder, get_root_path, CopyGlobOptionsBuilder, copy_glob_with};
-//! 
+//!
 //! fn main() {
 //!     let output = get_target_folder().join("copies");
 //!     let root = get_root_path().join("for_copy"); // same level as Cargo.toml
@@ -36,17 +36,18 @@
 //!     copy_glob_with("*.toml", output, &options);
 //! }
 //! ```
-//! 
+//!
 //! This will copy all files with the `.toml` extension in the `for_copy` folder without preserving the structure.
-//! 
+//!
 //! In addition, you can add exceptions from where files will be copied. By default, the `target` directory hangs in the excludes.
-//! 
+//!
 //! ```rust
 //! # use copy_glob::CopyGlobOptionsBuilder;
 //! let options = CopyGlobOptionsBuilder::new().add_exclude("**/some_pattern/*").build();
 //! ```
 
 use globset::{Glob, GlobMatcher, GlobSet, GlobSetBuilder};
+use std::env;
 use std::fs::create_dir_all;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
@@ -65,7 +66,9 @@ pub fn copy_glob_with(
     let matcher = new_glob(glob);
     let current_dir = options.root.as_ref();
 
-    create_dir_all(&output_dir).unwrap();
+    if !output_dir.as_ref().exists() {
+        create_dir_all(&output_dir).unwrap();
+    }
 
     for entry in WalkDir::new(&current_dir) {
         let entry = entry.expect("Unable to read dir");
@@ -146,7 +149,7 @@ pub fn new_glob(glob: impl AsRef<str>) -> GlobMatcher {
 }
 
 pub fn get_target_folder() -> PathBuf {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("target");
+    let path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("target");
 
     #[cfg(debug_assertions)]
     return path.join("debug");
@@ -156,7 +159,7 @@ pub fn get_target_folder() -> PathBuf {
 }
 
 pub fn get_root_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
 }
 
 fn get_str(path: &Path) -> &str {
