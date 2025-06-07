@@ -4,10 +4,10 @@
 //! 
 //! # How to use
 //! 
-//! Add a crate to the dev dependencies in `Cargo.toml`.
+//! Add a crate to the build dependencies in `Cargo.toml`.
 //! 
 //! ```toml
-//! [dev-dependencies]
+//! [build-dependencies]
 //! copy-glob = "0.1"
 //! ```
 //! 
